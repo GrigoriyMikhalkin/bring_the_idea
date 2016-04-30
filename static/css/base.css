@@ -1,0 +1,83 @@
+html,body {
+    background: #F1F1F1;
+    height: 100%;
+}
+
+.navbar {}
+
+.category {}
+
+.thumbnail {}
+
+.rate-box {}
+
+.comments {}
+
+.comment-meta {
+    background: #EEEEEE;
+}
+
+.comment-body {
+
+}
+
+#new-comments-counter {
+    background: grey;
+    text-align: center;
+}
+
+@media screen and (min-width:900px) {
+    .navbar {
+	margin-top: 1%;
+	width: 60%;
+	left: 20%;
+	background: white;
+    }
+
+    .category {
+	margin-left: 20%;
+    }
+
+    .thumbnail {
+	width: 60%;
+	margin-left: 20%;
+	background: white;
+    }
+
+    .rate-box {
+	margin-top:-10%;
+	margin-left: 2%;
+	margin-right: 1%;
+	width: 74px;
+	height: 74px;
+	background: #66CC33;
+	font-size: 3em;
+	text-align:center;
+	color: white;
+    }
+
+    .comments {
+
+    }
+
+    .modal-dialog {
+	width: 900px;
+    }
+}
+
+@media screen and (min-width:1280px){
+    .comments {
+	width:70%;
+    }
+
+    #idea_title {
+	width:65%;
+	font-size:2em;
+	
+    }
+
+    #idea_author {
+	width:32%;
+	font-size:2em;
+    }
+}

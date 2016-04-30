@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load simple_rate %}
+{% load i18n %}
+
+{% block content %}
+
+<center>
+ <a href="#new-idea" class="btn" role="button" data-toggle="modal"><h2>[ {% trans "add new idea" %} ]</h2></a>
+</center>
+
+<h2 class="category">{% trans "Popular" %}:</h2>
+
+{% for idea in object_list %}
+
+<div class="thumbnail">
+  <h3 style="margin-left:1%;">{{ idea.title }}</h3>
+  <p class="text-muted" style="margin-left:1%">{% trans "Published on" %} {{ idea.created }}</p>
+  <p class="text-muted" style="margin-left:1%">{% trans "Link" %}</span>: <a href="">{{ idea.source }}</a></p>
+  <hr>
+  <div style="margin-top:1%"></div>
+  <div class="caption" style="float:left;">
+    <div class="rate-box" style="margin-left:10%;margin-right:10%">
+      <div id="idea-rating">{% get_rating idea %}</div>
+    </div>
+  </div>
+
+  <p style="margin-left:1%">
+    {{ idea.content|safe }}
+  </p>
+
+  <div style="margin-top:1%"></div>
+  
+  <div style="margin-left:1.2%">
+    <t style="">
+      {{ idea.displayed }} <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+    </t>
+    <a href="/idea/{{ idea.id }}" style="margin-left:3%" > 
+      {{ idea.comments.count }} <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
+    </a>
+  </div>
+  
+   <div style="margin-bottom:1%"></div>
+  
+</div>
+
+{% endfor %}
+
+{% endblock content %}
+
+{% block modals %}
+<div class="modal fade" id="new-idea" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST">{% csrf_token %}
+	<div class="modal-header">
+	  <center>
+	    {{ form.title }}
+	    {{ form.author }}
+	  </center>
+	</div>
+	<div class="modal-body">
+	  <!--
+	  <p>
+	    {% trans "Tell us your name" %}:
+	    {{ form.author }}
+	  </p>
+	  -->
+	  <center>
+	    {{ form.content }}
+	  </center>
+	</div>
+	<input type="submit" value={% trans "Bring new idea" %} />
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock modals %}
+
+{% block js %}
+<script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
+<script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
+
+<script type="text/javascript">
+  $("#idea_title").attr("placeholder","{% trans 'Name of your idea' %}");
+  $("#idea_author").attr("placeholder","{% trans 'Your name' %}");
+</script>
+
+{% endblock js %}
