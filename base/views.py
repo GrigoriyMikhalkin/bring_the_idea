@@ -5,10 +5,11 @@ from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from django.db.models import F
-from .forms import *
 
-# import models
+from django_ajax.decorators import ajax
+
 from .models import *
+from .forms import *
 
 
 class NewIdea(FormView):
@@ -79,7 +80,9 @@ class DetailComment(SingleObjectMixin, FormView):
 
     def form_valid(self, form):
         comment = form.save(commit=False)
+        comment_count = Comment.objects.filter(idea=self.object).count()
         comment.idea = self.object
+        comment.position = comment_count
         comment.save()
         
         reply_id = self.request.POST.get("reply_id")
@@ -106,3 +109,20 @@ class DetailIdeaView(DetailView):
 
 class InfoView(TemplateView):
     template_name = "base/info.html"
+
+
+@ajax
+def load_new_comments(request):
+    idea_id = request.POST.get("idea")
+    count = request.POST.get("count")
+    new_comments = Comment.objects.filter(idea__id=idea_id, position__gte=count)
+    replies = { comment.id: [ reply.reply.id for reply in comment.replies.all() ]  for comment in new_comments }
+    new_comments = new_comments.values("id","content","author")
+    for comment in new_comments:
+        comment["content"] = comment["content"].replace("\r\n","<br>")
+    
+    return {
+        "new_comments": new_comments,
+        "replies": replies,
+        "count": new_comments.count(),
+    }

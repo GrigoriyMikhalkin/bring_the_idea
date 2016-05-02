@@ -9,29 +9,26 @@
 {% block content %}
   
 <div class="thumbnail">
-  <h3 style="margin-left:1%;">{{ idea.title }}</h3>
-  <p class="text-muted" style="margin-left:1%">{% trans "Published on" %} {{ idea.created }}</p>
+  <h3 style="text-align:center;font-family:Steinem Unicode;font-size:3em">{{ idea.title }}</h3>
+  <p style="margin-left:2%;margin-top:2%;font-size:1.2em"><t class="text-muted">{% trans "Published on" %} {{ idea.created }}</t> <t color="black">by</t> <a href="">{{ idea.author }}</a></p>
+  <p style="margin-left:2%;font-size:1.2em"><t class="text-muted">{% trans "Source" %}</t>: <a href="{{ idea.source }}">{{ idea.source }}</a></p>
   <hr>
-  <div style="margin-top:1%"></div>
-  <div class="caption" style="float:right;">
-    <div class="rate-box" style="margin-left:12%">
-      <div id="idea-rating">{% get_rating idea %}</div>
+  
+  <div class="row">
+    <div class="col-lg-2">
+      <div class="caption" style="text-align:center">
+	<a onclick="vote_idea_up({{ idea.id }})" class="btn btn-lg" style="font-size:2em;color:#66CC33;"><span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span></a>
+	<div id="idea-rating" style="font-size:4em;color:#66CC33">{% get_rating idea %}</div>
+	  <a onclick="vote_idea_down({{ idea.id }})" class="btn btn-lg" style="font-size:2em;color:red"><span class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span></a>
+      </div>
     </div>
-    <center style="margin-top:-3%">
-      <a onclick="vote_idea_up({{ idea.id }})" class="btn btn-lg"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></a>
-      <a onclick="vote_idea_down({{ idea.id }})" class="btn btn-lg" style="margin-left:-20%;"><span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></a>
-    </center>
+
+    <div class="col-lg-10">
+      <p>
+	{{ idea.content|safe }}
+      </p>
+    </div>
   </div>
-
-  <p style="margin-left:1%">
-    {{ idea.content }}
-  </p>
-
-  <div style="margin-top:1%"></div>
-
-  <p style="margin-left:1%;margin-bottom:2%"><span style="color:red">{% trans "Source" %}</span>: <a href="">{{ idea.source }}</a></p>
-    
-   <div style="margin-bottom:1%"></div>
   
 </div>
 
@@ -52,10 +49,10 @@
       <b style="margin-left:1%;">{{ comment.author }}</b>
       ·
       <t class="text-muted">{{ comment.created }}</t>
-      <div style="float:right;color:#66CC33;margin-top:-0.3%">
-	+10
-	<a onclick="vote_idea_up({{ idea.id }})" class="btn btn-sm" style="margin-top:-5%;margin-left:-10%"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></a>
-	<a onclick="vote_idea_up({{ idea.id }})" class="btn btn-sm" style="margin-left:-25%"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></a>
+      <div style="float:right;margin-top:-0.3%">
+	<t class="comment-rating" id="comment-{{ comment.id }}-rating" style="color:#66CC33">{% get_rating comment %}</t>
+	<a onclick="vote_comment_up({{ comment.id }})" class="btn btn-sm" style="margin-top:-5%;margin-left:-10%"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></a>
+	<a onclick="vote_comment_down({{ comment.id }})" class="btn btn-sm" style="margin-left:-25%"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></a>
       </div>
     </div>
 
@@ -67,7 +64,7 @@
 	<b>{% trans "Replies" %}: </b>
 
 	{% for reply in comment.replies.all %}
-	<a href="">#{{ reply.reply.id }}</a>
+	<a href="">#{{ reply.reply.id }} </a>
 	{% endfor %}
       </p>
       {% endif %}
@@ -78,10 +75,10 @@
     </div>
     
     {% endfor %}
-
-    <div id="new-comments-counter"></div>
     
   </div>
+
+  <div id="new-comments-counter" class="comment-counter comment-counter-lg" onclick="loadComments({{ idea.id }},{{ idea.comments.all.count }})"></div>
 
   <center>
     <h3 style="margin-left:1%;">{% trans "Post a new comment" %}</h3>
@@ -101,9 +98,18 @@
 {% endblock content %}
 
 {% block js %}
-
 <script type="text/javascript">
-  var ws = new WebSocket("ws://localhost:8888/comments/{{ idea.id }}");
+  $("#id_content").attr("placeholder", "Type your text here");
+  $("#id_content").show();
+  $("#new-comments-counter").hide();
+
+  function reply(comment_id) {
+      $("#reply_id").val(comment_id);
+      $("#id_content").text("#"+comment_id+"\n");
+      $("#id_content").show();
+  };
+
+   var ws = new WebSocket("ws://localhost:8888/comments/{{ idea.id }}");
 
   var new_message_text = "{% trans 'New comments' %}";
   var new_message_count = 0;
@@ -116,20 +122,43 @@
       }
   };
   
-  $("#id_content").attr("placeholder", "Type your text here");
-  $("#id_content").show();
-  $("#new-comments-counter").hide();
-
-  function reply(comment_id) {
-      $("#reply_id").val(comment_id);
-      $("#id_content").text("#"+comment_id+"\n");
-      $("#id_content").show();
-  };
 
   $("#comment-submit").click(function() {
       ws.send("NC")
   });
-  
+
+  function loadComments(idea_id,comment_count) {
+      args = {
+          idea:idea_id,
+          count:comment_count,
+          csrfmiddlewaretoken: '{{ csrf_token }}'
+      };
+      $.post("/load/comments/", args, function(data) {
+                  new_message_count = 0;
+                  var new_comment_count = comment_count + data.content.count;
+                  $("#new-comments-counter").attr("onclick","loadComments("+idea_id+","+new_comment_count+")");
+                  $("#new-comments-counter").hide();
+                  for (var i=0; i < data.content.new_comments.length; i++){
+		      var comment = data.content.new_comments[i];
+		      var comment_content = comment.content;
+	  	      var content_with_breaks = comment_content.replace(/\\r\\/g, "<br/>");
+		      var replies_element = "";
+		      var replies = data.content.replies[comment.id];
+		      if (replies.length > 0) {
+                          replies_element = "<p style='margin-top:1%'><b>{% trans 'Replies' %}: </b>";
+                          for (var j=0; j < replies.length; j++) {
+                              replies_element = replies_element+"<a href=''>#"+replies[j]+" </a>";
+			  };
+                          replies_element = replies_element+"</p>";
+                      }
+		      var comment_element = "<div class='comment-meta'><t class='text-muted' >#"+comment.id+"</t><b style='margin-left:1%;'>"+comment.author+"</b> · <t class='text-muted'>{% trans 'Just now' %}</t><div style='float:right;color:#66CC33;margin-top:-0.3%'>+10<a onclick='vote_idea_up({{ idea.id }})' class='btn btn-sm' style='margin-top:-5%;margin-left:-10%'><span class='glyphicon glyphicon-arrow-up' aria-hidden='true'></span></a><a onclick='vote_idea_up({{ idea.id }})' class='btn btn-sm' style='margin-left:-25%'><span class='glyphicon glyphicon-arrow-down' aria-hidden='true'></span></a></div></div><div class='comment-body' style='margin-left:1%;margin-top:1%'>"+content_with_breaks+replies_element+"<p><button onclick='reply("+comment.id+")' style='margin-left:90%'>Reply</button></p></div>";
+                      $(".comments").append(comment_element);
+		      $(".comments").show();
+		      alert(replies.length);
+                  }
+      });
+  };
+
 </script>
 
 {% endblock js %}

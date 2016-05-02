@@ -16,6 +16,7 @@ class Idea(models.Model):
 
 class Comment(models.Model):
     idea = models.ForeignKey(Idea, related_name="comments")
+    position = models.PositiveIntegerField(default=0)
     content = models.TextField()
     #reply_to = models.ForeignKey("Comment", related_name="replies", null=True)
     author = models.CharField(max_length=32,default="anon")

@@ -1,3 +1,5 @@
+@font-face {font-family:Steinem Unicode;src:url("fonts/STEINEMU.eot?") format("eot"),url("fonts/STEINEMU.woff") format("woff"),url("fonts/STEINEMU.ttf") format("truetype"),url("fonts/STEINEMU.svg#SteinemUnicode") format("svg");font-weight:normal;font-style:normal;}
+
 html,body {
     background: #F1F1F1;
     height: 100%;
@@ -21,9 +23,16 @@ html,body {
 
 }
 
-#new-comments-counter {
-    background: grey;
+#idea-rating {
+}
+
+.comment-counter {
     text-align: center;
+    cursor:pointer;
+    margin-top:5%;
+    background:#F5F5DC;
+    font-size:1.5em;
+    border-radius:10px;
 }
 
 @media screen and (min-width:900px) {
@@ -67,6 +76,10 @@ html,body {
 
 @media screen and (min-width:1280px){
     .comments {
+	width:70%;
+    }
+
+    .comment-counter-lg {
 	width:70%;
     }
 

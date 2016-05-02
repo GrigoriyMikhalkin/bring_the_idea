@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^top/$', views.TopIdeasView.as_view()),
     url(r'^idea/(?P<pk>\d+)$', views.DetailIdeaView.as_view(), name="idea-detail"),
     url(r'^info/$', views.InfoView.as_view()),
+    url(r'^load/comments/$', views.load_new_comments),
 ]
