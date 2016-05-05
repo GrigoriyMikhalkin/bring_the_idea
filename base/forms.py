@@ -3,7 +3,7 @@ from django import forms
 
 from ckeditor.widgets import CKEditorWidget
 
-from .formfields import SkypeFormField
+from .formfields import SkypeFormField, TelegramFormField
 from .models import *
 
 
@@ -13,6 +13,7 @@ class IdeaForm(forms.ModelForm):
     source = forms.CharField(required=False)
     email = forms.EmailField(required=False)
     skype = SkypeFormField(required=False)
+    telegram = TelegramFormField(required=False)
     
     class Meta:
         model = Idea
