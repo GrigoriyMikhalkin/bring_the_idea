@@ -1,11 +1,11 @@
 function negativeIdeaScore(){
-    score = $(".rate-box");
+    score = $("#idea-rating");
     if ( score.text() < 0) {
-	score.css("background","red");
+	score.css("color","red");
 	score.show();
     }
     else {
-	score.css("background","#66CC33");
+	score.css("color","#66CC33");
 	score.show();
     }
 };

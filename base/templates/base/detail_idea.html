@@ -6,15 +6,25 @@
 
 {% with object as idea %}
 
+{% block css %}
+<link href="{% static 'css/detail.css' %}" rel="stylesheet" type="text/css">
+{% endblock css %}
+
 {% block content %}
   
 <div class="thumbnail">
   <h3 style="text-align:center;font-family:Steinem Unicode;font-size:3em">{{ idea.title }}</h3>
-  <p style="margin-left:2%;margin-top:2%;font-size:1.2em"><t class="text-muted">{% trans "Published on" %} {{ idea.created }}</t> <t color="black">by</t> <a href="">{{ idea.author }}</a></p>
-  <p style="margin-left:2%;font-size:1.2em"><t class="text-muted">{% trans "Source" %}</t>: <a href="{{ idea.source }}">{{ idea.source }}</a></p>
-  <hr>
-  
-  <div class="row">
+
+  <div class="row" style="margin-top:2%">
+    <div class="col-lg-2">
+    </div>
+    <div class="col-lg-8">
+      <p style="font-size:1.2em"><t style="color:#c0c0c0">{% trans "Published on" %} {{ idea.created }}</t> <t color="black">by</t> <a href="">{{ idea.author }}</a></p>
+      <p style="font-size:1.2em;margin-top:-1%"><t style="color:#c0c0c0">{% trans "Source" %}</t>: <a href="{{ idea.source }}">{{ idea.source }}</a></p>
+    </div>
+  </div>
+    
+  <div class="row" style="margin-top:2%">
     <div class="col-lg-2">
       <div class="caption" style="text-align:center">
 	<a onclick="vote_idea_up({{ idea.id }})" class="btn btn-lg" style="font-size:2em;color:#66CC33;"><span class="glyphicon glyphicon-triangle-top" aria-hidden="true"></span></a>
@@ -23,7 +33,7 @@
       </div>
     </div>
 
-    <div class="col-lg-10">
+    <div class="col-lg-8">
       <p>
 	{{ idea.content|safe }}
       </p>
@@ -33,26 +43,26 @@
 </div>
 
 <div class="thumbnail">
-  <h3 style="margin-left:1%">{% trans "Comments" %} ({{ idea.comments.count }})</h3>
+  <h3 style="margin-left:5%">{% trans "Comments" %} ({{ idea.comments.count }})</h3>
 
-  <t style="margin-left:1%;">{% trans "Sort by" %}:</t>
+  <t style="margin-left:6%;">{% trans "Sort by" %}:</t>
   <a href="">{% trans "Date" %}</a>
   <t> | </t>
   <a href="">{% trans "Rating" %}</a>
 
-  <div class="comments" style="margin-top:1%;margin-left:1%">
+  <div class="comments" style="margin-top:2%;margin-left:5%">
 
     {% for comment in idea.comments.all %}
 
     <div class="comment-meta">
-      <t class="text-muted" >#{{ comment.id }} </t>
+      <t class="text-muted" style="white-space:pre">   #{{ comment.id }} </t>
       <b style="margin-left:1%;">{{ comment.author }}</b>
       ·
       <t class="text-muted">{{ comment.created }}</t>
       <div style="float:right;margin-top:-0.3%">
 	<t class="comment-rating" id="comment-{{ comment.id }}-rating" style="color:#66CC33">{% get_rating comment %}</t>
-	<a onclick="vote_comment_up({{ comment.id }})" class="btn btn-sm" style="margin-top:-5%;margin-left:-10%"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></a>
-	<a onclick="vote_comment_down({{ comment.id }})" class="btn btn-sm" style="margin-left:-25%"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></a>
+	<a onclick="vote_comment_up({{ comment.id }})" class="btn btn-sm" style="margin-top:-7%;margin-left:-10%;color:#66CC33"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></a>
+	<a onclick="vote_comment_down({{ comment.id }})" class="btn btn-sm" style="margin-left:-30%;margin-top:-2%;color:red"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></a>
       </div>
     </div>
 
@@ -61,7 +71,7 @@
 
       {% if comment.replies.all %}
       <p style="margin-top:1%">
-	<b>{% trans "Replies" %}: </b>
+	<t style="color:#a77a23">{% trans "Replies" %}: </t>
 
 	{% for reply in comment.replies.all %}
 	<a href="">#{{ reply.reply.id }} </a>
@@ -70,7 +80,7 @@
       {% endif %}
 
       
-      <p><button onclick="reply({{ comment.id }})" style="margin-left:90%">Reply</button></p>
+      <p><button id="comment-reply" onclick="reply({{ comment.id }})">Reply</button></p>
       
     </div>
     
@@ -80,17 +90,14 @@
 
   <div id="new-comments-counter" class="comment-counter comment-counter-lg" onclick="loadComments({{ idea.id }},{{ idea.comments.all.count }})"></div>
 
-  <center>
-    <h3 style="margin-left:1%;">{% trans "Post a new comment" %}</h3>
-    <p style="margin-left:1%">{% trans "* as guest you can use your name or post anonymously" %}</p>
-    <form class="comment-form" method="POST">{% csrf_token %}
-      {{ form.errors }}
-      <p><b>{% trans "Your name" %}</b>: {{ form.author }}</p>
-      <p>{{ form.content }}</p>
-      <input type="hidden" id="reply_id" name="reply_id" />
-      <input id="comment-submit" type="submit" value="Submit" />
-    </form>
-  </center>
+  <h3 style="margin-left:25%;margin-top:4%;font-size:2em">{% trans "Post new comment" %}</h3>
+  <form class="comment-form" method="POST">{% csrf_token %}
+    {{ form.errors }}
+    <p id="id_author_form"><b>{% trans "Your name" %}</b>: {{ form.author }}</p>
+    <p>{{ form.content }}</p>
+    <input type="hidden" id="reply_id" name="reply_id" />
+    <input id="submit-btn" type="submit" value="Submit" />
+  </form>
   
 </div>
 
@@ -98,8 +105,10 @@
 {% endblock content %}
 
 {% block js %}
+<script src="{% static 'js/rate.js' %}"></script>
+
 <script type="text/javascript">
-  $("#id_content").attr("placeholder", "Type your text here");
+  $("#id_content").attr("placeholder", "{% trans 'Type text here ...' %}");
   $("#id_content").show();
   $("#new-comments-counter").hide();
 

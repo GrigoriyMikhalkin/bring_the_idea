@@ -1,13 +1,19 @@
-from django.db import models
-from simple_rate.models import Rating
-from ckeditor.fields import RichTextField
 from django.contrib.contenttypes.fields import GenericRelation
+from django.db import models
+
+from ckeditor.fields import RichTextField
+from simple_rate.models import Rating
+
+from .fields import SkypeField, TelegramField
 
 
 class Idea(models.Model):
     title = models.CharField(max_length=128)
     content = RichTextField()
     source = models.URLField(null=True)
+    email = models.EmailField(null=True)
+    skype = SkypeField(null=True)
+    telegram = TelegramField(null=True)
     author = models.CharField(max_length=32,default="anon")
     displayed = models.PositiveIntegerField(default=0)
     rating = GenericRelation(Rating)
