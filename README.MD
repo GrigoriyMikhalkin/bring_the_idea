@@ -63,5 +63,4 @@
 
     python manage.py runserver
 
-В браузере заходим на `http://localhost:8000
-<http://localhost:8000>`_.
+В браузере заходим на http://localhost:8000
