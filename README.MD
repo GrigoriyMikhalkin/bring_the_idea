@@ -56,11 +56,12 @@
 
 ## Запуск проекта
 
-**Необязательно** Из корневой директории проекта запускаем Tornado сервер:
+**Необязательно!** Из корневой директории проекта запускаем Tornado сервер:
     python run_websock.py
 
 Запускаем Django сервер:
 
     python manage.py runserver
 
-В браузере заходим на `http://localhost:8000<http://localhost:8000/>`
+В браузере заходим на `http://localhost:8000
+<http://localhost:8000/>`_
