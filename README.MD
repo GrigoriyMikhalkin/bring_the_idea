@@ -57,7 +57,7 @@
 ## Запуск проекта
 
 **Необязательно!** Из корневой директории проекта запускаем Tornado сервер:
-    python run_websock.py
+    python run_websock.py --debug
 
 Запускаем Django сервер:
 

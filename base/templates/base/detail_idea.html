@@ -96,7 +96,7 @@
     <p id="id_author_form"><b>{% trans "Your name" %}</b>: {{ form.author }}</p>
     <p>{{ form.content }}</p>
     <input type="hidden" id="reply_id" name="reply_id" />
-    <input id="submit-btn" type="submit" value="Submit" />
+    <input id="comment-submit" type="submit" value="Submit" />
   </form>
   
 </div>
@@ -133,7 +133,7 @@
   
 
   $("#comment-submit").click(function() {
-      ws.send("NC")
+      ws.send("NC");
   });
 
   function loadComments(idea_id,comment_count) {
@@ -163,7 +163,6 @@
 		      var comment_element = "<div class='comment-meta'><t class='text-muted' >#"+comment.id+"</t><b style='margin-left:1%;'>"+comment.author+"</b> · <t class='text-muted'>{% trans 'Just now' %}</t><div style='float:right;color:#66CC33;margin-top:-0.3%'>+10<a onclick='vote_idea_up({{ idea.id }})' class='btn btn-sm' style='margin-top:-5%;margin-left:-10%'><span class='glyphicon glyphicon-arrow-up' aria-hidden='true'></span></a><a onclick='vote_idea_up({{ idea.id }})' class='btn btn-sm' style='margin-left:-25%'><span class='glyphicon glyphicon-arrow-down' aria-hidden='true'></span></a></div></div><div class='comment-body' style='margin-left:1%;margin-top:1%'>"+content_with_breaks+replies_element+"<p><button onclick='reply("+comment.id+")' style='margin-left:90%'>Reply</button></p></div>";
                       $(".comments").append(comment_element);
 		      $(".comments").show();
-		      alert(replies.length);
                   }
       });
   };
