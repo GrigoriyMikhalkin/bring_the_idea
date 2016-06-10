@@ -1,0 +1,23 @@
+version: '2'
+
+services:
+  db:
+    image: postgres:9.4
+    environment:
+      POSTGRES_PASSWORD: 'secret'
+      POSTGRES_DB: 'demo'
+    volumes:
+      - /var/lib/postgresql/data
+
+  web:
+    build: .
+    container_name: web
+    environment:
+      POSTGRES_PASSWORD: 'secret'
+      POSTGRES_DB: 'demo'
+    command: circusd docker-circus.ini
+    ports:
+      - "8000:8000"
+      - "8888:8888"
+    depends_on:
+      - db
