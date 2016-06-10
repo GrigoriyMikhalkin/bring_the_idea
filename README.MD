@@ -8,60 +8,33 @@
 
 Технологии которые должны быть установлены перед установкой проекта:
 
-1. Python 3.4
-2. pip3
-3. Git
-4. PostgreSQL
+1. Git(https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+2. Docker(https://docs.docker.com/engine/installation/)
+3. Docker-Compose(https://docs.docker.com/compose/install/), должна быть установлена версия >= 1.7
 
 ## Установка
 
-Первым делом нужно установить виртуальную среду для проекта. Переходим в директорию, где собираемся устанавливать проект, далее выполняем команды:
-
-    pip3 install virtualenv
-    mkdir bring_the_idea
-    cd bring_the_idea
-    virtualenv -p /usr/bin/python3.4 venv
-    source venv/bin/activate
-
-В установленную директорию клонируем проект:
+Клонируем репозиторий и заходим в коренную директорию проекта:
 
     git clone https://github.com/GrigoriyMikhalkin/bring_the_idea.git
     cd bring_the_idea
 
-Устанавливаем зависимости:
+Устанавливаем образ определенный в Dockerfile проекта:
 
-    pip install -r requirements.txt
+    docker-compose build
 
-Следующий этап -- настройка базы данных. Перед тем как выполнять нижеприведенные команды, необходимо установить PostgreSQL(инструкция для Ubuntu: https://help.ubuntu.com/community/PostgreSQL ).
+Если данная команда кидает ошибку о том, что docker сервер не обнаружен, запускаем ее с `sudo`.
 
-Создадим базу данных и пользователя:
+После того как образ был установлен, запускаем контейнер:
 
-    sudo su postgres
-    createdb btidb
-    createuser -P
+    docker-compose up -d
 
-Дадим доступ к нашей базе данных, только что созданному пользователю:
+Применяем миграции к базе данных:
 
-       psql
-       GRANT ALL PRIVELEGES ON DATABASE btidb TO имя_пользователя
+    sudo docker exec web python3 /code/manage.py migrate
 
-Теперь нужно прописать имя пользователя и пароль в настройках. В файле bring_the_idea/private_settings.py, в словаре DATABASES.default, вместо '' вставляем:
+Перезапускаем контейнер с Django приложением:
 
-    'USER': "имя пользователя",
-    'PASSWORD': "пароль",
+    sudo docker restart web
 
-Наконец, применяем миграции:
-
-    python manage.py migrate
-
-## Запуск проекта
-
-**Необязательно!** Из корневой директории проекта запускаем Tornado сервер:
-
-    python run_websock.py --debug
-
-Запускаем Django сервер:
-
-    python manage.py runserver
-
-В браузере заходим на http://localhost:8000
+Готово. В браузере заходим на http://localhost:8000
