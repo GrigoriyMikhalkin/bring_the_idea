@@ -14,3 +14,7 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
+ADMINS = [
+    ("admin", "admin@test.com", "admin"), # username, email, initial password
+]
