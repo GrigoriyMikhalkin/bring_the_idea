@@ -8,3 +8,4 @@ pbr==1.9.1
 psycopg2==2.6.1
 six==1.10.0
 tornado==4.3
+circus==0.13.0
